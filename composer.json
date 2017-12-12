@@ -1,0 +1,19 @@
+{
+    "name": "netsells/sso-client",
+    "description": "Client for the Netsells SSO server",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "authors": [
+        {
+            "name": "Sam Jordan",
+            "email": "sam@netsells.co.uk"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Netsells\\SSOClient\\": "src/"
+        }
+    }
+}
