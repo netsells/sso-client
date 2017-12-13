@@ -12,6 +12,10 @@ class SSOUser
     public $accessToken;
     public $refreshToken;
 
+    /**
+     * SSOUser constructor.
+     * @param $data
+     */
     public function __construct($data)
     {
         $this->id = $data->id;
