@@ -4,6 +4,7 @@ Client for the Netsells SSO server.
 ## Installation
 Add to composer:
 ```bash
+composer config repositories.sso-client vcs https://github.com/netsells/sso-client
 composer require netsells/sso-client
 ```
 
