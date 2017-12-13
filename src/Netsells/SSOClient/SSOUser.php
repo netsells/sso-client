@@ -6,6 +6,8 @@ class SSOUser
 {
     public $id;
     public $name;
+    public $first_name;
+    public $last_name;
     public $email;
     public $accessToken;
     public $refreshToken;
