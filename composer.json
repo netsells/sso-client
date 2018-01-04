@@ -15,5 +15,12 @@
         "psr-4": {
             "Netsells\\SSOClient\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Netsells\\SSOClient\\ServiceProvider"
+            ]
+        }
     }
 }

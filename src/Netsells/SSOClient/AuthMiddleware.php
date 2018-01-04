@@ -3,13 +3,12 @@
 namespace Netsells\SSOClient;
 
 use Closure;
-use GuzzleHttp\Client;
 use Illuminate\Routing\Redirector;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Contracts\Routing\UrlGenerator;
 
-class SSOAuthMiddleware
+class AuthMiddleware
 {
     /**
      * @var Closure
@@ -84,28 +83,22 @@ class SSOAuthMiddleware
                     $this->session->put('sso_token', $request->get('sso_token'));
                 }
 
-                // Try and fetch the user
-                $client = new Client(['base_uri' => env('SSO_URL')]);
-                $userInfo = $client->get('user', [
-                    'query' => [
-                        'client_id' => env('SSO_CLIENT_ID'),
-                        'client_secret' => env('SSO_CLIENT_SECRET'),
-                        'token' => $this->session->get('sso_token'),
-                    ],
-                ]);
+                // Fetch the user
+                $client = app(Client::class);
+                $loginUser = $ssoUser = $client->fetchUserByToken($this->session->get('sso_token'));
 
-                $userData = json_decode($userInfo->getBody()->getContents());
-                $ssoUser = new SSOUser($userData);
+                if (config('auth.providers.users.driver', 'eloquent') !== 'sso') {
+                    $userClass = config('auth.providers.users.model');
+                    $loginUser = (new $userClass)->firstOrNew(['email' => $ssoUser->email]);
 
-                $userClass = config('auth.providers.users.model');
-                $user = (new $userClass)->firstOrNew(['email' => $ssoUser->email]);
+                    if (is_callable(static::$userCallback)) {
+                        $loginUser = static::getUserCallback()($loginUser, $ssoUser);
+                    }
 
-                if (is_callable(static::$userCallback)) {
-                    $user = static::getUserCallback()($user, $ssoUser);
+                    $loginUser->save();
                 }
 
-                $user->save();
-                $this->auth->login($user);
+                $this->auth->login($loginUser);
 
                 return $next($request);
             }
