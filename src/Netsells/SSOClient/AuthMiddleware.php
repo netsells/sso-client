@@ -95,7 +95,19 @@ class AuthMiddleware
                         $loginUser = static::getUserCallback()($loginUser, $ssoUser);
                     }
 
+                    $loginUserExisted = $loginUser->exists();
+
                     $loginUser->save();
+
+                    if ($loginUserExisted) {
+                        if (method_exists($loginUser, 'ssoUserWasUpdated')) {
+                            $loginUser->ssoUserwasUpdated();
+                        }
+                    } else {
+                        if (method_exists($loginUser, 'ssoUserwasCreated')) {
+                            $loginUser->ssoUserwasCreated();
+                        }
+                    }
                 }
 
                 $this->auth->login($loginUser);
