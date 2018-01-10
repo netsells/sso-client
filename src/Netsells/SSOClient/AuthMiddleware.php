@@ -101,11 +101,11 @@ class AuthMiddleware
 
                     if ($loginUserExisted) {
                         if (method_exists($loginUser, 'ssoUserWasUpdated')) {
-                            $loginUser->ssoUserwasUpdated();
+                            $loginUser->ssoUserWasUpdated();
                         }
                     } else {
-                        if (method_exists($loginUser, 'ssoUserwasCreated')) {
-                            $loginUser->ssoUserwasCreated();
+                        if (method_exists($loginUser, 'ssoUserWasCreated')) {
+                            $loginUser->ssoUserWasCreated();
                         }
                     }
                 }

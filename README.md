@@ -43,5 +43,7 @@ SSOAuthMiddleware::setUserCallback(function ($user, \Netsells\SSOClient\SSOUser 
 });
 ```
 
+If you wish to run some code when a user is created or updated via the SSO middleware, you can create the methods `ssoUserWasCreated` and `ssoUserWasUpdated` on the model.
+
 #### No Database setup
 All you need to do is set the config, `auth.providers.users.driver` to `sso`. You can now use `Auth::user()` which will return an SSO User instead of a Laravel user.
