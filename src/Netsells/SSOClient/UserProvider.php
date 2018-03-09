@@ -72,17 +72,8 @@ class UserProvider implements UserProviderContract
      */
     protected function getSSOUser()
     {
-        $client = new Client(['base_uri' => env('SSO_URL')]);
-        $userInfo = $client->get('user', [
-            'query' => [
-                'client_id' => env('SSO_CLIENT_ID'),
-                'client_secret' => env('SSO_CLIENT_SECRET'),
-                'token' => \Session::get('sso_token'),
-            ],
-        ]);
-
-        $userData = json_decode($userInfo->getBody()->getContents());
-
-        return new User((array) $userData);
+        /** @var \Netsells\SSOClient\Client $client */
+        $client = app(\Netsells\SSOClient\Client::class);
+        return $client->fetchUserByToken(\Session::get('sso_token'));
     }
 }
