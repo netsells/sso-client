@@ -74,6 +74,6 @@ class UserProvider implements UserProviderContract
     {
         /** @var \Netsells\SSOClient\Client $client */
         $client = app(\Netsells\SSOClient\Client::class);
-        return $client->fetchUserByToken(\Session::get('sso_token'));
+        return $client->fetchUser();
     }
 }
