@@ -53,7 +53,7 @@ class AuthMiddleware
      * @param Closure $closure
      * @return void
      */
-    public static function setUserCallback(Closure $closure): void
+    public static function setUserCallback(Closure $closure)
     {
         static::$userCallback = $closure;
     }
@@ -61,7 +61,7 @@ class AuthMiddleware
     /**
      * @return Closure
      */
-    public static function getUserCallback(): ?Closure
+    public static function getUserCallback()
     {
         return static::$userCallback;
     }
@@ -92,7 +92,8 @@ class AuthMiddleware
                     $loginUser = (new $userClass)->firstOrNew(['email' => $ssoUser->email]);
 
                     if (is_callable(static::$userCallback)) {
-                        $loginUser = static::getUserCallback()($loginUser, $ssoUser);
+                        $closure = static::getUserCallback();
+                        $loginUser = $closure($loginUser, $ssoUser);
                     }
 
                     $loginUserExisted = $loginUser->exists();
