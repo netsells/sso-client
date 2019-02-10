@@ -6,24 +6,13 @@ use Closure;
 use Illuminate\Routing\Redirector;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Contracts\Auth\Factory as Auth;
-use Illuminate\Contracts\Routing\UrlGenerator;
 
 class AuthMiddleware
 {
     /**
-     * @var Closure
-     */
-    protected static $userCallback;
-
-    /**
      * @var Session
      */
     private $session;
-
-    /**
-     * @var UrlGenerator
-     */
-    private $urlGenerator;
 
     /**
      * @var Guard
@@ -33,44 +22,30 @@ class AuthMiddleware
      * @var Redirector
      */
     private $redirector;
+    /**
+     * @var Authenticator
+     */
+    private $authenticator;
 
     /**
      * SSOAuthMiddleware constructor.
      * @param Session $session
-     * @param UrlGenerator $urlGenerator
      * @param Auth $auth
      * @param Redirector $redirector
      */
-    public function __construct(Session $session, UrlGenerator $urlGenerator, Auth $auth, Redirector $redirector)
+    public function __construct(Session $session, Auth $auth, Redirector $redirector)
     {
         $this->session = $session;
-        $this->urlGenerator = $urlGenerator;
         $this->auth = $auth;
         $this->redirector = $redirector;
     }
 
     /**
-     * @param Closure $closure
-     * @return void
-     */
-    public static function setUserCallback(Closure $closure)
-    {
-        static::$userCallback = $closure;
-    }
-
-    /**
-     * @return Closure
-     */
-    public static function getUserCallback()
-    {
-        return static::$userCallback;
-    }
-
-    /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
+     * @param Authenticator $authenticator
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -85,31 +60,9 @@ class AuthMiddleware
 
                 // Fetch the user
                 $client = app(Client::class);
-                $loginUser = $ssoUser = $client->fetchUserByToken($this->session->get('sso_token'));
+                $ssoUser = $client->fetchUserByToken($this->session->get('sso_token'));
 
-                if (config('auth.providers.users.driver', 'eloquent') !== 'sso') {
-                    $userClass = config('auth.providers.users.model');
-                    $loginUser = (new $userClass)->firstOrNew(['email' => $ssoUser->email]);
-
-                    if (is_callable(static::$userCallback)) {
-                        $closure = static::getUserCallback();
-                        $loginUser = $closure($loginUser, $ssoUser);
-                    }
-
-                    $loginUserExisted = $loginUser->exists();
-
-                    $loginUser->save();
-
-                    if ($loginUserExisted) {
-                        if (method_exists($loginUser, 'ssoUserWasUpdated')) {
-                            $loginUser->ssoUserWasUpdated();
-                        }
-                    } else {
-                        if (method_exists($loginUser, 'ssoUserWasCreated')) {
-                            $loginUser->ssoUserWasCreated();
-                        }
-                    }
-                }
+                $loginUser = $this->authenticator->handleUserCreation($ssoUser);
 
                 $this->auth->login($loginUser);
 
@@ -117,18 +70,29 @@ class AuthMiddleware
             }
 
             // Send user to auth
-            return $this->redirector->to($this->ssoAuthUrl());
+            return $this->redirector->to($this->authenticator->generateSSOAuthUrl());
         }
 
         return $next($request);
     }
 
     /**
-     * Builds the Auth URL
-     * @return string
+     * @return Authenticator
      */
-    public function ssoAuthUrl()
+    public function getAuthenticator(): Authenticator
     {
-        return env('SSO_URL') . '/auth?client_id=' . env('SSO_CLIENT_ID') . '&url=' . $this->urlGenerator->current();
+        if (!$this->authenticator) {
+            $this->authenticator = app(Authenticator::class);
+        }
+
+        return $this->authenticator;
+    }
+
+    /**
+     * @param Authenticator $authenticator
+     */
+    public function setAuthenticator(Authenticator $authenticator)
+    {
+        $this->authenticator = $authenticator;
     }
 }
