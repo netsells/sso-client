@@ -61,6 +61,7 @@ class Authenticator
 
         $middlewareResponse = $middleware->handle($request, function () {});
 
+
         if ($middlewareResponse instanceof \Illuminate\Http\RedirectResponse) {
             return response()->json([
                 'redirect_url' => $middlewareResponse->getTargetUrl(),
@@ -68,10 +69,18 @@ class Authenticator
         }
 
         if ($this->auth->check()) {
-            $user = $this->auth->user()->id;
-            $token = $this->auth->tokenById($user);
+            $user = $this->auth->user();
 
-            return response()->json(['token' => $token]);
+            if (config('auth.guards.api.driver') == 'passport') {
+                $token = $user->createToken('access_token');
+                $accessToken = $token->accessToken;
+            } else if (class_exists('Tymon\JWTAuth\Providers\LaravelServiceProvider') && config('auth.guards.api.driver') == 'jwt') {
+                $accessToken = $this->auth->tokenById($user->id);
+            } else {
+                throw new \Exception("No suitable token provider found, please read docs for info.");
+            }
+
+            return response()->json(['token' => $accessToken]);
         } else {
             return response()->make(null, 500);
         }
