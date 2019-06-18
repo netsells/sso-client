@@ -75,7 +75,7 @@ class Authenticator
                 $token = $user->createToken('access_token');
                 $accessToken = $token->accessToken;
             } else if (class_exists('Tymon\JWTAuth\Providers\LaravelServiceProvider') && config('auth.guards.api.driver') == 'jwt') {
-                $accessToken = $this->auth->tokenById($user->id);
+                $accessToken = $this->auth->guard('api')->tokenById($user->id);
             } else {
                 throw new \Exception("No suitable token provider found, please read docs for info.");
             }
