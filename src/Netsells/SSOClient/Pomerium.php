@@ -37,7 +37,6 @@ class Pomerium
 
     private function __construct()
     {
-
     }
 
     public function isValid()
