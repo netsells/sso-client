@@ -6,16 +6,12 @@ use Illuminate\Contracts\Auth\Authenticatable;
 
 /**
  * @property string id
- * @property string token
  * @property string email
  * @property string name
- * @property string oauth_token
- * @property string oauth_refresh_token
- * @property string allowed_access
- * @property string created_at
- * @property string updated_at
  * @property string first_name
  * @property string last_name
+ * @property string photo_url
+ * @property array groups
  **/
 class User implements Authenticatable
 {
@@ -28,6 +24,11 @@ class User implements Authenticatable
     public function __construct(array $attributes = [])
     {
         $this->attributes = $attributes;
+    }
+
+    public function __isset($key)
+    {
+        return array_key_exists($key, $this->attributes);
     }
 
     /**
