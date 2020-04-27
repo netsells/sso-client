@@ -19,7 +19,7 @@ class UserProvider implements UserProviderContract
      */
     public function retrieveById($identifier)
     {
-        return;
+        return null;
     }
 
     /**
@@ -31,7 +31,7 @@ class UserProvider implements UserProviderContract
      */
     public function retrieveByToken($identifier, $token)
     {
-        return;
+        return null;
     }
 
     /**
@@ -43,7 +43,7 @@ class UserProvider implements UserProviderContract
      */
     public function updateRememberToken(Authenticatable $user, $token)
     {
-        return;
+
     }
 
     /**
@@ -54,7 +54,7 @@ class UserProvider implements UserProviderContract
      */
     public function retrieveByCredentials(array $credentials)
     {
-        return;
+        return null;
     }
 
     /**
@@ -66,6 +66,6 @@ class UserProvider implements UserProviderContract
      */
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
-        return;
+        return true;
     }
 }
