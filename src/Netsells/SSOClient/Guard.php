@@ -25,6 +25,15 @@ class Guard implements GuardInterface
         $this->userService = app(UserService::class);
     }
 
+    /**
+     * Determines if we can correctly use this guard.
+     * 
+     * @return bool 
+     */
+    public function isValid(): bool
+    {
+        return $this->pomerium->isValid();
+    }
 
     /**
      * Get the currently authenticated user.
