@@ -1,5 +1,5 @@
 # SSO Client
-Client for the Netsells SSO server.
+Client for the Netsells SSO. This consumes the headers from [Pomerium](https://www.pomerium.io/) and integrates them with Laravel's auth system.
 
 ## Installation
 Add to composer:
@@ -7,24 +7,12 @@ Add to composer:
 composer require netsells/sso-client
 ```
 
-If you are not using Laravel 5.5, you need to add the service provider to your app.php:
-```php
-Netsells\SSOClient\ServiceProvider::class,
+Add the following environment variable
+```
+POMERIUM_PUBLIC_KEY=
 ```
 
-Add the following environment variables
-```
-SSO_URL=https://sso.service.com
-SSO_CLIENT_ID=
-SSO_CLIENT_SECRET=
-```
-
-Add the SSO Auth middleware to any protected routes - these are typically the same routes you protect using the `auth` middleware provided by Laravel.
-
-In your app/Http/Kernel.php add at the bottom of the `$routeMiddleware` array:
-```php
-'sso' => \Netsells\SSOClient\AuthMiddleware::class,
-```
+This is the base64 encoded public key. This is used to detemine that the JWT data came from Pomerium and not an attacker.
 
 ### User Provider Setup
 
@@ -46,15 +34,3 @@ If you wish to run some code when a user is created or updated via the SSO middl
 
 #### No Database setup
 All you need to do is set the config, `auth.providers.users.driver` to `sso`. You can now use `Auth::user()` which will return an SSO User instead of a Laravel user.
-
-## Token Provider
-
-When using the SSO as an API token provider, you must either use passport or setup `tymon/jwt-auth ^1.0.0`.
-
-You can handle token requests by adding this route:
-```php
-Route::get('token', function (Request $request) {
-    $auth = app(\Netsells\SSOClient\Authenticator::class);
-    return $auth->responseForTokenRequest($request);
-})
-```

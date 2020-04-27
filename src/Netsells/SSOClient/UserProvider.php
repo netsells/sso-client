@@ -2,9 +2,11 @@
 
 namespace Netsells\SSOClient;
 
+use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider as UserProviderContract;
+use Illuminate\Http\Request;
 
 class UserProvider implements UserProviderContract
 {
@@ -17,7 +19,7 @@ class UserProvider implements UserProviderContract
      */
     public function retrieveById($identifier)
     {
-        return $this->getSSOUser(['id' => $identifier]);
+        return;
     }
 
     /**
@@ -29,7 +31,7 @@ class UserProvider implements UserProviderContract
      */
     public function retrieveByToken($identifier, $token)
     {
-        return $this->getSSOUser();
+        return;
     }
 
     /**
@@ -52,7 +54,7 @@ class UserProvider implements UserProviderContract
      */
     public function retrieveByCredentials(array $credentials)
     {
-        return $this->getSSOUser();
+        return;
     }
 
     /**
@@ -64,16 +66,6 @@ class UserProvider implements UserProviderContract
      */
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
-        return true;
-    }
-
-    /**
-     * @return User
-     */
-    protected function getSSOUser()
-    {
-        /** @var \Netsells\SSOClient\Client $client */
-        $client = app(\Netsells\SSOClient\Client::class);
-        return $client->fetchUser();
+        return;
     }
 }
