@@ -43,7 +43,6 @@ class UserProvider implements UserProviderContract
      */
     public function updateRememberToken(Authenticatable $user, $token)
     {
-
     }
 
     /**
