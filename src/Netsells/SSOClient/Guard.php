@@ -12,11 +12,9 @@ class Guard implements GuardInterface
 {
     use GuardHelpers;
 
-    protected $pomerium;
-    protected $userProvider;
-
-    /** @var UserService $userService */
-    protected $userService;
+    protected Pomerium $pomerium;
+    protected UserProvider $userProvider;
+    protected UserService $userService;
 
     public function __construct(UserProvider $provider, Request $request = null)
     {
@@ -25,25 +23,15 @@ class Guard implements GuardInterface
         $this->userService = app(UserService::class);
     }
 
-    /**
-     * Determines if we can correctly use this guard.
-     * 
-     * @return bool 
-     */
     public function isValid(): bool
     {
         return $this->pomerium->isValid();
     }
 
-    /**
-     * Get the currently authenticated user.
-     *
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
-     */
-    public function user()
+    public function user(): ?Authenticatable
     {
         if (!$this->pomerium->isValid()) {
-            return;
+            return null;
         }
 
         $ssoUser = $this->userService->createSsoUser($this->pomerium->getUserAttributes());
@@ -51,12 +39,6 @@ class Guard implements GuardInterface
         return $this->userService->handleUserCreation($ssoUser);
     }
 
-    /**
-     * Validate a user's credentials.
-     *
-     * @param  array  $credentials
-     * @return bool
-     */
     public function validate(array $credentials = [])
     {
         return true;
@@ -64,6 +46,5 @@ class Guard implements GuardInterface
 
     public function logout()
     {
-        return;
     }
 }

@@ -15,26 +15,18 @@ use Illuminate\Contracts\Auth\Authenticatable;
  **/
 class User implements Authenticatable
 {
-    protected $attributes = [];
+    protected array $attributes = [];
 
-    /**
-     * SSOUser constructor.
-     * @param array $attributes
-     */
     public function __construct(array $attributes = [])
     {
         $this->attributes = $attributes;
     }
 
-    public function __isset($key)
+    public function __isset($key): bool
     {
         return array_key_exists($key, $this->attributes);
     }
 
-    /**
-     * @param $key
-     * @return mixed
-     */
     public function __get($key)
     {
         if (array_key_exists($key, $this->attributes)) {
@@ -42,89 +34,44 @@ class User implements Authenticatable
         }
     }
 
-    /**
-     * @param $key
-     * @param $value
-     */
-    public function __set($key, $value)
+    public function __set($key, $value): void
     {
         $this->attributes[$key] = $value;
     }
 
-    /**
-     * @param array $attributes
-     */
-    public function setAttributes($attributes = [])
+    public function setAttributes($attributes = []): void
     {
         $this->attributes = $attributes;
     }
 
-    /**
-     * @return array
-     */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
 
-    /**
-     * Get the name of the unique identifier for the user.
-     *
-     * @return string
-     */
-    public function getAuthIdentifierName()
+    public function getAuthIdentifierName(): string
     {
         return 'id';
     }
 
-    /**
-     * Get the unique identifier for the user.
-     *
-     * @return mixed
-     */
     public function getAuthIdentifier()
     {
         return $this->attributes['id'];
     }
 
-    /**
-     * Get the password for the user.
-     *
-     * @return string
-     */
     public function getAuthPassword()
     {
-        return;
     }
 
-    /**
-     * Get the token value for the "remember me" session.
-     *
-     * @return string
-     */
     public function getRememberToken()
     {
-        return;
     }
 
-    /**
-     * Set the token value for the "remember me" session.
-     *
-     * @param  string $value
-     * @return void
-     */
     public function setRememberToken($value)
     {
-        return;
     }
 
-    /**
-     * Get the column name for the "remember me" token.
-     *
-     * @return string
-     */
     public function getRememberTokenName()
     {
-        return;
     }
 }

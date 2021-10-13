@@ -2,18 +2,12 @@
 
 namespace Netsells\SSOClient;
 
-use Netsells\SSOClient\Guard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
-    /**
-     * Register bindings in the container.
-     *
-     * @return void
-     */
     public function register()
     {
         Pomerium::setPublicKey(env('POMERIUM_PUBLIC_KEY'));
@@ -22,7 +16,6 @@ class ServiceProvider extends BaseServiceProvider
             $guard = new Guard(Auth::createUserProvider($config['provider']), $this->app['request']);
 
             if (!$guard->isValid()) {
-                // Fallback to eloquent
                 $guard = $app['auth']->createSessionDriver($name, $config);
             }
 

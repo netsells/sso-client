@@ -7,17 +7,17 @@ use Illuminate\Http\Request;
 
 class Pomerium
 {
-    protected static $publicKey;
+    protected static string $publicKey;
 
     protected const HEADER_NAME = "X-Pomerium-Jwt-Assertion";
 
-    protected $userId;
-    protected $email;
-    protected $firstName;
-    protected $lastName;
-    protected $fullName;
-    protected $photoUrl;
-    protected $groups = [];
+    protected string $userId;
+    protected string $email;
+    protected string $firstName;
+    protected string $lastName;
+    protected string $fullName;
+    protected string $photoUrl;
+    protected array $groups = [];
 
     public static function setPublicKey($key): void
     {
@@ -35,11 +35,7 @@ class Pomerium
         return $pomerium;
     }
 
-    private function __construct()
-    {
-    }
-
-    public function isValid()
+    public function isValid(): bool
     {
         return !is_null($this->userId);
     }
